@@ -1,4 +1,4 @@
-(function(NS, $) {
+(function(root, $) {
 
   /**
   * Set some constants used along the validator
@@ -23,11 +23,11 @@
   * This class validates a form, according to the
   * data in the HTML field
   *
-  * @class ValidateForm
+  * @class jvm
   * @constructor
   * @param {String} form The ID/Class of the form
   */
-  var ValidateForm = function(form) {
+  var jvm = function(form) {
     this.$form = $(form);
 
     this.valuesToDoubleCheck = {
@@ -49,7 +49,7 @@
   *
   * @method initialize
   */
-  ValidateForm.prototype.initialize = function() {
+  jvm.prototype.initialize = function() {
     this.validatorCustomMethods();
     this.addListeners();
     this.setMasks();
@@ -63,7 +63,7 @@
   *
   * @method setMasks
   */
-  ValidateForm.prototype.setMasks = function() {
+  jvm.prototype.setMasks = function() {
     var $toMask = this.$form.find('[data-mask]');
     if($toMask.length) $toMask.each($.proxy(this.setEachMask, this));
   };
@@ -75,7 +75,7 @@
   * @param {Number} index the index of element
   * @param {Object} element the element itself
   */
-  ValidateForm.prototype.setEachMask = function(index, element) {
+  jvm.prototype.setEachMask = function(index, element) {
     var $el = $(element);
     $el.mask(MASKS[$el.data('mask')]);
   };
@@ -85,7 +85,7 @@
   *
   * @method addListeners
   */
-  ValidateForm.prototype.addListeners = function() {
+  jvm.prototype.addListeners = function() {
     this.$form.find(SUBMIT_BUTTON).on('click', $.proxy(this.onSubmitbuttonClick, this));
   };
 
@@ -95,7 +95,7 @@
   * @method onSubmitbuttonClick
   * @param {Object} e the "event" object from clicking a button
   */
-  ValidateForm.prototype.onSubmitbuttonClick = function(e) {
+  jvm.prototype.onSubmitbuttonClick = function(e) {
     e && e.preventDefault();
     this.$form.submit();
   };
@@ -105,7 +105,7 @@
   *
   * @method validatorCustomMethods
   */
-  ValidateForm.prototype.validatorCustomMethods = function() {
+  jvm.prototype.validatorCustomMethods = function() {
     $.validator.addMethod('cpf', function(value) {
       return NS.helpers.isCPF(value);
     });
@@ -138,7 +138,7 @@
    *
    * @method updateDependencies
    */
-  ValidateForm.prototype.updateDependencies = function() {
+  jvm.prototype.updateDependencies = function() {
     var $inputsWithDependencies = this.$form.find('[data-depends]');
 
     $inputsWithDependencies.each($.proxy(this.getDependencyData, this));
@@ -151,7 +151,7 @@
    * @param  {Number} index the index of input
    * @param  {Object} input the reference to the input in the DOM
    */
-  ValidateForm.prototype.getDependencyData = function(index, input) {
+  jvm.prototype.getDependencyData = function(index, input) {
     var $input = $(input),
       dependency = $input.data('depends');
 
@@ -173,7 +173,7 @@
    * @param  {Object} $input the jQuery reference to the input beeing configured
    * @param  {Boolean} bool the flag of the configuration
    */
-  ValidateForm.prototype.updateInputValidation = function($input, noConfig) {
+  jvm.prototype.updateInputValidation = function($input, noConfig) {
     var newConfig = {
       messages: {}
     },
@@ -196,7 +196,7 @@
   *
   * @method setValidation
   */
-  ValidateForm.prototype.setValidation = function() {
+  jvm.prototype.setValidation = function() {
     var $toValidate = this.$form.find('[data-validate]');
     this.rules = {};
     this.messages = {};
@@ -219,7 +219,7 @@
   * @param {Number} index The index of the element
   * @param {Object} el The element itself
   */
-  ValidateForm.prototype.getValidationData = function(index, el) {
+  jvm.prototype.getValidationData = function(index, el) {
     var validationData = $(el).data('validate'),
       field = el.name;
 
@@ -239,7 +239,7 @@
   * @param {Object} errorMap
   * @param {Array} errorList an array with all errors
   */
-  ValidateForm.prototype.showErrors = function(errorMap, errorList) {
+  jvm.prototype.showErrors = function(errorMap, errorList) {
     if (errorList.length === 0) this.removeErrors();
 
     for (var i = 0, l = errorList.length; i < l; i += 1) {
@@ -255,7 +255,7 @@
   * @param {Object} containerInput the jQuery reference to the elemnt
   * @param {String} message the error message
   */
-  ValidateForm.prototype.addError = function(containerInput, message) {
+  jvm.prototype.addError = function(containerInput, message) {
     spanErrosInput = $(containerInput).find('.form-error');
 
     if (spanErrosInput.length) {
@@ -270,7 +270,7 @@
   *
   * @method removeErrors
   */
-  ValidateForm.prototype.removeErrors = function() {
+  jvm.prototype.removeErrors = function() {
     $(this.$form).find('.form-error').remove();
   };
 
@@ -279,7 +279,7 @@
   *
   * @method checkBackend
   */
-  ValidateForm.prototype.checkBackend = function() {
+  jvm.prototype.checkBackend = function() {
     var arrCheck = [];
 
     for(var index in this.valuesToDoubleCheck) {
@@ -300,7 +300,7 @@
   *
   * @method backendCallback
   */
-  ValidateForm.prototype.backendCallback = function() {
+  jvm.prototype.backendCallback = function() {
     var item,
       existCount = 0;
 
@@ -322,7 +322,7 @@
   * @method checkemail
   * @param {String} email the email to check
   */
-  ValidateForm.prototype.checkemail = function(email) {
+  jvm.prototype.checkemail = function(email) {
     var deferred = $.Deferred();
 
     nsEmailAjaxService.isEmailExists(email, $.proxy(function(data) {
@@ -352,7 +352,7 @@
   * @method checkcpf
   * @param {String} cpf the cpf to check
   */
-  ValidateForm.prototype.checkcpf = function(cpf) {
+  jvm.prototype.checkcpf = function(cpf) {
     var deferred = $.Deferred();
 
     nsCpfAjaxService.isCpfExists(NS.helpers.clearCPF(cpf), $.proxy(function(data) {
@@ -381,11 +381,11 @@
    *
    * @method formSubmit
    */
-  ValidateForm.prototype.formSubmit = function() {
+  jvm.prototype.formSubmit = function() {
     // this.$form.submit();
     // this prevents an infinite looping
     this.$form[0].submit();
   };
 
-  NS.ValidateForm = ValidateForm;
-} (this.NS, jQuery));
+  root.jvm = jvm;
+} (window, jQuery));
