@@ -30,7 +30,7 @@
    * @method updateDependencies
    */
   jvm.prototype.updateDependencies = function() {
-    var $inputsWithDependencies = this.$form.find('[data-depends]');
+    var $inputsWithDependencies = this.$form.find('[data-jvm-depends]');
 
     $inputsWithDependencies.each($.proxy(this.getDependencyData, this));
   };
@@ -44,7 +44,7 @@
    */
   jvm.prototype.getDependencyData = function(index, input) {
     var $input = $(input),
-      dependency = $input.data('depends');
+      dependency = $input.data('jvm-depends');
 
     for(var index in dependency) {
       if(this.$form.find(index)[0].value !== dependency[index]) {
@@ -71,7 +71,8 @@
     inputConfigs = $input.data('jvm-validate');
 
     if(noConfig) {
-      newConfig = false;
+      $input.rules('remove');
+      return;
     } else {
       for(var index in inputConfigs) {
         newConfig[index] = inputConfigs[index][0];
@@ -147,12 +148,12 @@
   * @param {String} message the error message
   */
   jvm.prototype.addError = function(containerInput, message) {
-    spanErrosInput = $(containerInput).find('.form-error');
+    spanErrosInput = $(containerInput).find('.jvm-error');
 
     if (spanErrosInput.length) {
       spanErrosInput.html(message);
     } else {
-      containerInput.append('<span class="form-error">' + message + '</span>');
+      containerInput.append('<span class="jvm-error">' + message + '</span>');
     }
   };
 
@@ -162,109 +163,7 @@
   * @method removeErrors
   */
   jvm.prototype.removeErrors = function() {
-    $(this.$form).find('.form-error').remove();
-  };
-
-  /**
-  * start configuration to check backend
-  *
-  * @method checkBackend
-  */
-  jvm.prototype.checkBackend = function() {
-    var arrCheck = [];
-
-    for(var index in this.valuesToDoubleCheck) {
-      if(this.valuesToDoubleCheck[index].field.length) {
-        arrCheck.push(this['check' + index](this.valuesToDoubleCheck[index].field.val()));
-      }
-    }
-
-    if(arrCheck.length) {
-      $.when.apply($, arrCheck).done($.proxy(this.backendCallback, this));
-    } else {
-      this.formSubmit();
-    }
-  };
-
-  /**
-  * callback to all backend requisitions
-  *
-  * @method backendCallback
-  */
-  jvm.prototype.backendCallback = function() {
-    var item,
-      existCount = 0;
-
-    for(var index in arguments) {
-      item = arguments[index];
-
-      if(item.exist) {
-        existCount += 1;
-        this.addError(item.$el.parent(), item.errorMessage);
-      }
-    }
-
-    if(!existCount) this.formSubmit();
-  };
-
-  /**
-  * check if email exist in the backend
-  *
-  * @method checkemail
-  * @param {String} email the email to check
-  */
-  jvm.prototype.checkemail = function(email) {
-    var deferred = $.Deferred();
-
-    nsEmailAjaxService.isEmailExists(email, $.proxy(function(data) {
-      var dataToReturn;
-
-      if(this.valuesToDoubleCheck.email.initialValue === email) {
-        dataToReturn = {
-          exist: false
-        };
-      } else {
-        dataToReturn = {
-          exist: data,
-          errorMessage: EMAIL.error,
-          $el: this.valuesToDoubleCheck.email.field
-        };
-      }
-
-      deferred.resolve(dataToReturn);
-    }, this));
-
-    return deferred.promise();
-  };
-
-  /**
-  * check if cpf exist in the backend
-  *
-  * @method checkcpf
-  * @param {String} cpf the cpf to check
-  */
-  jvm.prototype.checkcpf = function(cpf) {
-    var deferred = $.Deferred();
-
-    nsCpfAjaxService.isCpfExists(NS.helpers.clearCPF(cpf), $.proxy(function(data) {
-      var dataToReturn;
-
-      if(this.valuesToDoubleCheck.cpf.initialValue === cpf) {
-        dataToReturn = {
-          exist: false
-        };
-      } else {
-        dataToReturn = {
-          exist: data,
-          errorMessage: CPF.error,
-          $el: this.valuesToDoubleCheck.cpf.field
-        };
-      }
-
-      deferred.resolve(dataToReturn);
-    }, this));
-
-    return deferred.promise();
+    $(this.$form).find('.jvm-error').remove();
   };
 
   /**
@@ -273,7 +172,6 @@
    * @method formSubmit
    */
   jvm.prototype.formSubmit = function() {
-    // this.$form.submit();
     // this prevents an infinite looping
     this.$form[0].submit();
   };

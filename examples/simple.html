@@ -6,9 +6,21 @@
 </head>
 <body>
   <form id="form">
-    <input type="text"
-      data-jvm-validate='{ "required": [true, "Obrigatório"], "minlength": [2, "Inválido"] }'
-    >
+    <div>
+      <input type="text"
+        name="id"
+        data-jvm-validate='{ "required": [true, "Obrigatório"], "minlength": [2, "Inválido"] }'
+      >
+        <!-- data-jvm-depends='{ "#name": "yeah" }' -->
+    </div>
+
+    <div>
+      <input type="text" id="name" name="name">
+    </div>
+
+    <div>
+      <input type="submit">
+    </div>
   </form>
 
 
