@@ -1,25 +1,6 @@
 (function(root, $) {
 
   /**
-  * Set some constants used along the validator
-  */
-  var SUBMIT_BUTTON = '#submit-form',
-    EMAIL = {
-      input: '#email',
-      error: 'Email já cadastrado'
-    },
-    CPF = {
-      input: '#cpf',
-      error: 'CPF já cadastrado'
-    },
-    MASKS = {
-      date: '99/99/9999',
-      cpf: '999.999.999-99',
-      tel: '9999-9999?9',
-      cep: '99999-999'
-    };
-
-  /**
   * This class validates a form, according to the
   * data in the HTML field
   *
@@ -30,17 +11,6 @@
   var jvm = function(form) {
     this.$form = $(form);
 
-    this.valuesToDoubleCheck = {
-      email: {
-        field: this.$form.find(EMAIL.input),
-        initialValue: this.$form.find(EMAIL.input).val()
-      },
-      cpf: {
-        field: this.$form.find(CPF.input),
-        initialValue: this.$form.find(CPF.input)
-      }
-    };
-
     this.initialize();
   };
 
@@ -50,87 +20,8 @@
   * @method initialize
   */
   jvm.prototype.initialize = function() {
-    this.validatorCustomMethods();
-    this.addListeners();
-    this.setMasks();
-
     this.setValidation();
     this.updateDependencies();
-  };
-
-  /**
-  * start configuration for masks
-  *
-  * @method setMasks
-  */
-  jvm.prototype.setMasks = function() {
-    var $toMask = this.$form.find('[data-mask]');
-    if($toMask.length) $toMask.each($.proxy(this.setEachMask, this));
-  };
-
-  /**
-  * set mask for each element that has the data-mask
-  *
-  * @method setEachMask
-  * @param {Number} index the index of element
-  * @param {Object} element the element itself
-  */
-  jvm.prototype.setEachMask = function(index, element) {
-    var $el = $(element);
-    $el.mask(MASKS[$el.data('mask')]);
-  };
-
-  /**
-  * Add listeners to the submit button
-  *
-  * @method addListeners
-  */
-  jvm.prototype.addListeners = function() {
-    this.$form.find(SUBMIT_BUTTON).on('click', $.proxy(this.onSubmitbuttonClick, this));
-  };
-
-  /**
-  * callback when submit
-  *
-  * @method onSubmitbuttonClick
-  * @param {Object} e the "event" object from clicking a button
-  */
-  jvm.prototype.onSubmitbuttonClick = function(e) {
-    e && e.preventDefault();
-    this.$form.submit();
-  };
-
-  /**
-  * Adds the custom methods to validator plugin
-  *
-  * @method validatorCustomMethods
-  */
-  jvm.prototype.validatorCustomMethods = function() {
-    $.validator.addMethod('cpf', function(value) {
-      return NS.helpers.isCPF(value);
-    });
-
-    $.validator.addMethod('lettersonly', function(value, element) {
-      return this.optional(element) || /[a-zA-ZáéíóúàâêôãõüçÁÉÍÓÚÀÂÊÔÃÕÜÇ ]/g.test(value);
-    });
-
-    $.validator.addMethod('expression', function(value, element) {
-      return this.optional(element) || /.+@+.+\..+/i.test(value);
-    });
-
-    $.validator.addMethod('datecustom', function(value) {
-      var regex = /^((((0?[1-9]|1\d|2[0-8])\/(0?[1-9]|1[0-2]))|((29|30)\/(0?[13456789]|1[0-2]))|(31\/(0?[13578]|1[02])))\/((19|20)?\d\d))$|((29\/0?2\/)((19|20)?(0[48]|[2468][048]|[13579][26])|(20)?00))$/;
-      return regex.exec(value);
-    });
-
-    $.validator.addMethod('phone', function(value) {
-      var phone = value.split('_').join('');
-      if (phone.length < 9) {
-        return false;
-      } else {
-        return true;
-      }
-    });
   };
 
   /**
@@ -177,7 +68,7 @@
     var newConfig = {
       messages: {}
     },
-    inputConfigs = $input.data('validate');
+    inputConfigs = $input.data('jvm-validate');
 
     if(noConfig) {
       newConfig = false;
@@ -197,7 +88,7 @@
   * @method setValidation
   */
   jvm.prototype.setValidation = function() {
-    var $toValidate = this.$form.find('[data-validate]');
+    var $toValidate = this.$form.find('[data-jvm-validate]');
     this.rules = {};
     this.messages = {};
 
@@ -220,7 +111,7 @@
   * @param {Object} el The element itself
   */
   jvm.prototype.getValidationData = function(index, el) {
-    var validationData = $(el).data('validate'),
+    var validationData = $(el).data('jvm-validate'),
       field = el.name;
 
     this.rules[field] = {};

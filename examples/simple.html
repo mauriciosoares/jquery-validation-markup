@@ -7,7 +7,7 @@
 <body>
   <form id="form">
     <input type="text"
-      data-validate='{ "required": [true, "Obrigatório"], "minlength": [2, "Inválido"] }'
+      data-jvm-validate='{ "required": [true, "Obrigatório"], "minlength": [2, "Inválido"] }'
     >
   </form>
 
@@ -16,7 +16,7 @@
   <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.13.1/jquery.validate.min.js"></script>
 	<script src="../jquery-validation-markup.js"></script>
 	<script>
-    new jvm('#form');
+    var form = new jvm('#form');
 	</script>
 </body>
 </html>
